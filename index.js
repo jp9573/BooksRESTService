@@ -10,7 +10,11 @@ const db = mongoose.connect(process.env.DATABASE_CONNECTION);
 const bookRouter = express.Router();
 
 bookRouter.route("/books").get((req, res) => {
-  Book.find((err, books) => {
+  let query = {};
+  if (req.query.genre) {
+    query.genre = req.query.genre;
+  }
+  Book.find(query, (err, books) => {
     if (err) {
       return res.send(err);
     }

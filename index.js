@@ -9,7 +9,14 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const db = mongoose.connect(process.env.DATABASE_CONNECTION);
+
+if (process.env.ENV === "Test") {
+  console.log("This is test");
+  const db = mongoose.connect(process.env.TEST_DATABASE_CONNECTION);
+} else {
+  console.log("This is for real");
+  const db = mongoose.connect(process.env.DATABASE_CONNECTION);
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,6 +27,8 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.listen(port, () => {
+app.server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+module.exports = app;

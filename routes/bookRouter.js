@@ -1,26 +1,16 @@
 const express = require("express");
 const bookController = require("../controller/booksController");
+const bookMiddleware = require("../middleware/bookMiddleware");
 
 function routes(Book) {
   const bookRouter = express.Router();
   const controller = bookController(Book);
+  const middleware = bookMiddleware(Book);
 
   bookRouter.route("/books").post(controller.post).get(controller.get);
 
   // Middleware for /books/:bookId API
-  bookRouter.use("/books/:bookId", (req, res, next) => {
-    const { bookId } = req.params;
-    Book.findById(bookId, (err, book) => {
-      if (err) {
-        return res.send(err);
-      }
-      if (book) {
-        req.book = book;
-        return next();
-      }
-      return res.sendStatus(404);
-    });
-  });
+  bookRouter.use("/books/:bookId", middleware.bookFinderMiddleware);
 
   bookRouter
     .route("/books/:bookId")
